@@ -4,9 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "run": "node app.js"
+    "start": "node app.js",
+    "test:run": "jest"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   },
   "author": "Filippo Rivolta",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "prompt": "^1.2.0",
+    "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "jest": "^27.3.1"
+  }
 }

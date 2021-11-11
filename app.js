@@ -1,35 +1,8 @@
-const startRoom = 4;
-const objectsToCollect = ["Knife", "Potted Plant", "Pillow"];
-const map = {
-  rooms: [
-    { id: 1, name: "Hallway", north: 2, east: 7, objects: [] },
-    {
-      id: 2,
-      name: "Dining Room",
-      north: 5,
-      south: 1,
-      west: 3,
-      east: 4,
-      objects: [],
-    },
-    { id: 3, name: "Kitchen", east: 2, objects: [{ name: "Knife" }] },
-    { id: 4, name: "Sun Room", west: 2, north: 6, south: 7, objects: [] },
-    {
-      id: 5,
-      name: "Bedroom",
-      south: 2,
-      east: 6,
-      objects: [{ name: "Pillow" }],
-    },
-    { id: 6, name: "Bathroom", west: 5, south: 4, objects: [] },
-    {
-      id: 7,
-      name: "Living room",
-      west: 1,
-      north: 4,
-      objects: [{ name: "Potted Plant" }],
-    },
-  ],
+const fs = require("fs");
+const prompt = require("prompt-sync")({ sigint: true });
+
+const getMap = () => {
+  return JSON.parse(fs.readFileSync("./map.json"));
 };
 
 // Breadth-first search to find the shortest path to all rooms from the start room and collect all objects
@@ -43,6 +16,7 @@ const bfs = (map, startRoom, objectsToCollect) => {
 
   while (queue.length) {
     const currentRoom = queue.shift();
+    // Room objects should be collected only if they are in the objectsToCollect array
     const roomObjectes = currentRoom.objects.map((object) => object.name);
     objectsCollected.push(...roomObjectes);
     path.push({ ...currentRoom, collected: roomObjectes });
@@ -87,13 +61,35 @@ const getNeighbors = (map, room) => {
   return neighbors;
 };
 
+// Output to console log in this format:
+// ID Room Object collected
+// ----------------------------------
+const outputFromPath = (path) => {
+  console.log("ID \t Room \t Object collected");
+  console.log("----------------------------------");
+  // Console log a table where every line is a room and the objects collected in that room
+  for (room of path) {
+    console.log(
+      `${room.id} \t ${room.name} \t ${
+        room.collected.length ? room.collected : "None"
+      }`
+    );
+  }
+};
+
 const findRoomById = (map, roomId) => {
   return map.rooms.find((room) => room.id === roomId);
 };
 
 // This is the function that will be called when the game is loaded
 function init() {
-  bfs(map, 4, objectsToCollect);
+  const startRoomId = prompt("What is room id?");
+  const objectsToCollect = prompt(
+    "What objects do you want to collect? (comma separated): "
+  );
+  const objectsToCollectArray = objectsToCollect.split(",");
+  const path = bfs(getMap(), parseInt(startRoomId), objectsToCollectArray);
+  outputFromPath(path);
 }
 
-console.log(bfs(map, startRoom, objectsToCollect));
+init();

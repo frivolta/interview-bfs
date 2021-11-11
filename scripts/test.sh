@@ -1,2 +1,2 @@
 #!/bin/sh
-echo 'hello'
+npm run start
